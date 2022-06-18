@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.sqlite.model.Product;
 import com.example.sqlite.model.ProductType;
@@ -145,6 +146,55 @@ public class ProductSqlite extends SQLiteOpenHelper {
 
         // Select All Query
         String selectQuery = "SELECT  * FROM " + PRODUCT_TABLE_NAME;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            try {
+
+                // looping through all rows and adding to list
+                if (cursor.moveToFirst()) {
+                    do {
+                        Product obj = new Product();
+                        //only one column
+                        obj.setProductID(cursor.getString(0));
+                        obj.setProductName(cursor.getString(1));
+                        obj.setProductType(cursor.getString(2));
+                        obj.setPrice(cursor.getInt(3));
+                        obj.setDate(cursor.getString(4));
+                        obj.setCount(cursor.getInt(5));
+
+                        //you could add additional columns here..
+
+                        list.add(obj);
+                    } while (cursor.moveToNext());
+                }
+
+            } finally {
+                try {
+                    cursor.close();
+                } catch (Exception ignore) {
+                }
+            }
+
+        } finally {
+            try {
+                db.close();
+            } catch (Exception ignore) {
+            }
+        }
+
+        return list;
+    }
+
+    public ArrayList<Product> getAllProductByDate(String start, String end) {
+
+        ArrayList<Product> list = new ArrayList<Product>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + PRODUCT_TABLE_NAME + " WHERE `date` >= " + android.database.DatabaseUtils.sqlEscapeString(start) + " AND `date` <= " + android.database.DatabaseUtils.sqlEscapeString(end);
+        Log.d("hunghkp", "getAllProductByDate: " + selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         try {

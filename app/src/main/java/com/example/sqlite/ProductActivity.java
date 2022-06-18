@@ -18,6 +18,7 @@ import com.example.sqlite.adapter.ProductAdapter;
 import com.example.sqlite.database.ProductSqlite;
 import com.example.sqlite.model.Product;
 import com.example.sqlite.model.ProductType;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -40,6 +41,8 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
 
     private ProductSqlite productSqlite;
 
+    private FloatingActionButton fbSort;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
         rvProduct = findViewById(R.id.rv_product);
         btnAdd = findViewById(R.id.btn_add);
         btnEdit = findViewById(R.id.btn_edit);
+        fbSort = findViewById(R.id.fb_sort);
 
         tvHeader.setText("Loại sản phẩm " + productType.getTypeName());
 
@@ -86,6 +90,13 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
             }
         });
 
+        fbSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
+
 
     }
 
@@ -100,7 +111,7 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
     }
 
 
-    public void showDialog(ProductType productType) {
+    public void showDialog() {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -121,19 +132,18 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
         btnSortDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = edStartDialog.getText().toString();
+                String start = edStartDialog.getText().toString();
                 String end = edEndDialog.getText().toString();
-                if (!name.isEmpty()) {
-                    boolean status = productSqlite.updateProductType(new ProductType(productType.getTypeID(), name));
-                    if (status) {
-                        Toast.makeText(ProductActivity.this, "Edit Success", Toast.LENGTH_SHORT).show();
-                        getList();
-                        dialog.dismiss();
-
-                    } else {
-                        Toast.makeText(ProductActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
+                if (!start.isEmpty() && !end.isEmpty()) {
+                    productArrayList.clear();
+                    productArrayList.addAll(productSqlite.getAllProductByDate(start, end));
+                    productAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }else {
+                    productArrayList.clear();
+                    productArrayList.addAll(productSqlite.getAllProduct());
+                    productAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
                 }
             }
         });
@@ -163,6 +173,7 @@ public class ProductActivity extends AppCompatActivity implements OnItemListener
     @Override
     public void deleteItem(Product data) {
         productSqlite.deleteProduct(data);
+        getList();
     }
 
     @Override

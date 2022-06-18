@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Ngày bắt đầu dd/MM/yyyy">
+        android:hint="Ngày bắt đầu YYYY-MM-DD">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ed_date_1"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Ngày kết thúc dd/MM/yyyy">
+        android:hint="Ngày kết thúc YYYY-MM-DD">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ed_date_2"
